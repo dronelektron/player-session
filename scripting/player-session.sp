@@ -1,7 +1,6 @@
 #include <sourcemod>
 
 #include "ps/database"
-#include "ps/database/map"
 #include "ps/database/player-address"
 #include "ps/database/player-auth"
 #include "ps/database/player-name"
@@ -9,7 +8,6 @@
 #include "ps/string"
 
 #include "modules/database.sp"
-#include "modules/database/map.sp"
 #include "modules/database/player-address.sp"
 #include "modules/database/player-auth.sp"
 #include "modules/database/player-name.sp"

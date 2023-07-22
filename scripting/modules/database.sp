@@ -11,7 +11,6 @@ public void Database_OnConnect(Database database, const char[] error, any data) 
         g_database = database;
 
         LogMessage("Connected to '%s' database", DATABASE_NAME);
-        Database_Map_Create();
         Database_PlayerAddress_Create();
         Database_PlayerAuth_Create();
         Database_PlayerName_Create();
