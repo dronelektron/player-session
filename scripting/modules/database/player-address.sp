@@ -27,53 +27,58 @@ public void Database_PlayerAddress_OnCreate(Database database, DBResultSet resul
     }
 }
 
-void Database_PlayerAddress_Insert(StringMap bundle) {
-    char query[QUERY_SIZE];
-    char ip[IP_SIZE];
-
-    bundle.GetString(KEY_PLAYER_IP, ip, sizeof(ip));
-
-    Database_Get().Format(query, sizeof(query), g_insertAddress, ip);
-    Database_Get().Query(Database_PlayerAddress_OnInsert, query, bundle);
-}
-
-public void Database_PlayerAddress_OnInsert(Database database, DBResultSet results, const char[] error, StringMap bundle) {
+void Database_PlayerAddress_InsertOrGetId(StringMap bundle) {
     char ip[IP_SIZE];
 
     bundle.GetString(KEY_PLAYER_IP, ip, sizeof(ip));
 
     int addressId = Cache_GetPlayerAddressId(ip);
 
-    if (addressId == ID_NOT_FOUND) {
-        Database_PlayerAddress_Cache(bundle);
-    } else {
+    if (addressId != ID_NOT_FOUND) {
         Database_PlayerAddress_UpdateSession(bundle, addressId);
         CloseHandle(bundle);
+
+        return;
     }
+
+    char insertQuery[QUERY_SIZE];
+    char selectQuery[QUERY_SIZE];
+
+    Database_Get().Format(insertQuery, sizeof(insertQuery), g_insertAddress, ip);
+    Database_Get().Format(selectQuery, sizeof(selectQuery), g_getAddressId, ip);
+
+    Transaction transaction = new Transaction();
+
+    transaction.AddQuery(insertQuery);
+    transaction.AddQuery(selectQuery);
+
+    Database_Get().Execute(transaction, Database_PlayerAddress_InsertOrGetIdSuccess, Database_PlayerAddress_InsertOrGetIdFailure, bundle);
 }
 
-static void Database_PlayerAddress_Cache(StringMap bundle) {
-    char query[QUERY_SIZE];
-    char ip[IP_SIZE];
+public void Database_PlayerAddress_InsertOrGetIdSuccess(Database database, StringMap bundle, int numQueries, DBResultSet[] results, any[] queryData) {
+    DBResultSet selectedResults = results[1];
 
-    bundle.GetString(KEY_PLAYER_IP, ip, sizeof(ip));
+    if (selectedResults.FetchRow()) {
+        int addressId = selectedResults.FetchInt(0);
 
-    Database_Get().Format(query, sizeof(query), g_getAddressId, ip);
-    Database_Get().Query(Database_PlayerAddress_OnCache, query, bundle);
-}
-
-public void Database_PlayerAddress_OnCache(Database database, DBResultSet results, const char[] error, StringMap bundle) {
-    if (results.FetchRow()) {
-        int addressId = results.FetchInt(0);
-        char ip[IP_SIZE];
-
-        bundle.GetString(KEY_PLAYER_IP, ip, sizeof(ip));
-
-        Cache_SetPlayerAddressId(ip, addressId);
+        Database_PlayerAddress_UpdateCache(bundle, addressId);
         Database_PlayerAddress_UpdateSession(bundle, addressId);
     }
 
     CloseHandle(bundle);
+}
+
+public void Database_PlayerAddress_InsertOrGetIdFailure(Database database, StringMap bundle, int numQueries, const char[] error, int failIndex, any[] queryData) {
+    LogError("Transaction is failed: '%s'", error);
+    CloseHandle(bundle);
+}
+
+static void Database_PlayerAddress_UpdateCache(StringMap bundle, int addressId) {
+    char ip[IP_SIZE];
+
+    bundle.GetString(KEY_PLAYER_IP, ip, sizeof(ip));
+
+    Cache_SetPlayerAddressId(ip, addressId);
 }
 
 static void Database_PlayerAddress_UpdateSession(StringMap bundle, int addressId) {

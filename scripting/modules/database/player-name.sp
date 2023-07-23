@@ -27,53 +27,58 @@ public void Database_PlayerName_OnCreate(Database database, DBResultSet results,
     }
 }
 
-void Database_PlayerName_Insert(StringMap bundle) {
-    char query[QUERY_SIZE];
-    char name[MAX_NAME_LENGTH];
-
-    bundle.GetString(KEY_PLAYER_NAME, name, sizeof(name));
-
-    Database_Get().Format(query, sizeof(query), g_insertName, name);
-    Database_Get().Query(Database_PlayerName_OnInsert, query, bundle);
-}
-
-public void Database_PlayerName_OnInsert(Database database, DBResultSet results, const char[] error, StringMap bundle) {
+void Database_PlayerName_InsertOrGetId(StringMap bundle) {
     char name[MAX_NAME_LENGTH];
 
     bundle.GetString(KEY_PLAYER_NAME, name, sizeof(name));
 
     int nameId = Cache_GetPlayerNameId(name);
 
-    if (nameId == ID_NOT_FOUND) {
-        Database_PlayerName_Cache(bundle);
-    } else {
+    if (nameId != ID_NOT_FOUND) {
         Database_PlayerName_UpdateSession(bundle, nameId);
         CloseHandle(bundle);
+
+        return;
     }
+
+    char insertQuery[QUERY_SIZE];
+    char selectQuery[QUERY_SIZE];
+
+    Database_Get().Format(insertQuery, sizeof(insertQuery), g_insertName, name);
+    Database_Get().Format(selectQuery, sizeof(selectQuery), g_getNameId, name);
+
+    Transaction transaction = new Transaction();
+
+    transaction.AddQuery(insertQuery);
+    transaction.AddQuery(selectQuery);
+
+    Database_Get().Execute(transaction, Database_PlayerName_InsertOrGetIdSuccess, Database_PlayerName_InsertOrGetIdFailure, bundle);
 }
 
-static void Database_PlayerName_Cache(StringMap bundle) {
-    char query[QUERY_SIZE];
-    char name[MAX_NAME_LENGTH];
+public void Database_PlayerName_InsertOrGetIdSuccess(Database database, StringMap bundle, int numQueries, DBResultSet[] results, any[] queryData) {
+    DBResultSet selectedResults = results[1];
 
-    bundle.GetString(KEY_PLAYER_NAME, name, sizeof(name));
+    if (selectedResults.FetchRow()) {
+        int nameId = selectedResults.FetchInt(0);
 
-    Database_Get().Format(query, sizeof(query), g_getNameId, name);
-    Database_Get().Query(Database_PlayerName_OnCache, query, bundle);
-}
-
-public void Database_PlayerName_OnCache(Database database, DBResultSet results, const char[] error, StringMap bundle) {
-    if (results.FetchRow()) {
-        int nameId = results.FetchInt(0);
-        char name[MAX_NAME_LENGTH];
-
-        bundle.GetString(KEY_PLAYER_NAME, name, sizeof(name));
-
-        Cache_SetPlayerNameId(name, nameId);
+        Database_PlayerName_UpdateCache(bundle, nameId);
         Database_PlayerName_UpdateSession(bundle, nameId);
     }
 
     CloseHandle(bundle);
+}
+
+public void Database_PlayerName_InsertOrGetIdFailure(Database database, StringMap bundle, int numQueries, const char[] error, int failIndex, any[] queryData) {
+    LogError("Transaction is failed: '%s'", error);
+    CloseHandle(bundle);
+}
+
+static void Database_PlayerName_UpdateCache(StringMap bundle, int nameId) {
+    char name[MAX_NAME_LENGTH];
+
+    bundle.GetString(KEY_PLAYER_NAME, name, sizeof(name));
+
+    Cache_SetPlayerNameId(name, nameId);
 }
 
 static void Database_PlayerName_UpdateSession(StringMap bundle, int nameId) {

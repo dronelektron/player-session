@@ -27,53 +27,58 @@ public void Database_PlayerAuth_OnCreate(Database database, DBResultSet results,
     }
 }
 
-void Database_PlayerAuth_Insert(StringMap bundle) {
-    char query[QUERY_SIZE];
-    char steam[MAX_AUTHID_LENGTH];
-
-    bundle.GetString(KEY_PLAYER_STEAM, steam, sizeof(steam));
-
-    Database_Get().Format(query, sizeof(query), g_insertAuth, steam);
-    Database_Get().Query(Database_PlayerAuth_OnInsert, query, bundle);
-}
-
-public void Database_PlayerAuth_OnInsert(Database database, DBResultSet results, const char[] error, StringMap bundle) {
+void Database_PlayerAuth_InsertOrGetId(StringMap bundle) {
     char steam[MAX_AUTHID_LENGTH];
 
     bundle.GetString(KEY_PLAYER_STEAM, steam, sizeof(steam));
 
     int authId = Cache_GetPlayerAuthId(steam);
 
-    if (authId == ID_NOT_FOUND) {
-        Database_PlayerAuth_Cache(bundle);
-    } else {
+    if (authId != ID_NOT_FOUND) {
         Database_PlayerAuth_UpdateSession(bundle, authId);
         CloseHandle(bundle);
+
+        return;
     }
+
+    char insertQuery[QUERY_SIZE];
+    char selectQuery[QUERY_SIZE];
+
+    Database_Get().Format(insertQuery, sizeof(insertQuery), g_insertAuth, steam);
+    Database_Get().Format(selectQuery, sizeof(selectQuery), g_getAuthId, steam);
+
+    Transaction transaction = new Transaction();
+
+    transaction.AddQuery(insertQuery);
+    transaction.AddQuery(selectQuery);
+
+    Database_Get().Execute(transaction, Database_PlayerAuth_InsertOrGetIdSuccess, Database_PlayerAuth_InsertOrGetIdFailure, bundle);
 }
 
-static void Database_PlayerAuth_Cache(StringMap bundle) {
-    char query[QUERY_SIZE];
-    char steam[IP_SIZE];
+public void Database_PlayerAuth_InsertOrGetIdSuccess(Database database, StringMap bundle, int numQueries, DBResultSet[] results, any[] queryData) {
+    DBResultSet selectedResults = results[1];
 
-    bundle.GetString(KEY_PLAYER_STEAM, steam, sizeof(steam));
+    if (selectedResults.FetchRow()) {
+        int authId = selectedResults.FetchInt(0);
 
-    Database_Get().Format(query, sizeof(query), g_getAuthId, steam);
-    Database_Get().Query(Database_PlayerAuth_OnCache, query, bundle);
-}
-
-public void Database_PlayerAuth_OnCache(Database database, DBResultSet results, const char[] error, StringMap bundle) {
-    if (results.FetchRow()) {
-        int authId = results.FetchInt(0);
-        char steam[IP_SIZE];
-
-        bundle.GetString(KEY_PLAYER_STEAM, steam, sizeof(steam));
-
-        Cache_SetPlayerAuthId(steam, authId);
+        Database_PlayerAuth_UpdateCache(bundle, authId);
         Database_PlayerAuth_UpdateSession(bundle, authId);
     }
 
     CloseHandle(bundle);
+}
+
+public void Database_PlayerAuth_InsertOrGetIdFailure(Database database, StringMap bundle, int numQueries, const char[] error, int failIndex, any[] queryData) {
+    LogError("Transaction is failed: '%s'", error);
+    CloseHandle(bundle);
+}
+
+static void Database_PlayerAuth_UpdateCache(StringMap bundle, int authId) {
+    char steam[MAX_AUTHID_LENGTH];
+
+    bundle.GetString(KEY_PLAYER_STEAM, steam, sizeof(steam));
+
+    Cache_SetPlayerAuthId(steam, authId);
 }
 
 static void Database_PlayerAuth_UpdateSession(StringMap bundle, int authId) {

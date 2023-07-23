@@ -7,17 +7,17 @@ void UseCase_GetPlayerInfo(int client) {
 static void UseCase_SavePlayerAddress(int client) {
     StringMap bundle = Bundle_PlayerAddress(client);
 
-    Database_PlayerAddress_Insert(bundle);
+    Database_PlayerAddress_InsertOrGetId(bundle);
 }
 
 static void UseCase_SavePlayerAuth(int client) {
     StringMap bundle = Bundle_PlayerAuth(client);
 
-    Database_PlayerAuth_Insert(bundle);
+    Database_PlayerAuth_InsertOrGetId(bundle);
 }
 
 static void UseCase_SavePlayerName(int client) {
     StringMap bundle = Bundle_PlayerName(client);
 
-    Database_PlayerName_Insert(bundle);
+    Database_PlayerName_InsertOrGetId(bundle);
 }
