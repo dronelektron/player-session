@@ -84,6 +84,6 @@ static void Database_PlayerAuth_UpdateSession(StringMap bundle, int authId) {
     int client = GetClientOfUserId(clientId);
 
     if (client != INVALID_CLIENT) {
-        Session_SetPlayerAuthId(client, authId);
+        Session_Get(client).SetValue(KEY_PLAYER_AUTH_ID, authId);
     }
 }

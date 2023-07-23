@@ -84,6 +84,6 @@ static void Database_PlayerName_UpdateSession(StringMap bundle, int nameId) {
     int client = GetClientOfUserId(clientId);
 
     if (client != INVALID_CLIENT) {
-        Session_SetPlayerNameId(client, nameId);
+        Session_Get(client).SetValue(KEY_PLAYER_NAME_ID, nameId);
     }
 }

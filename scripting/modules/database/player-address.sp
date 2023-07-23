@@ -84,6 +84,6 @@ static void Database_PlayerAddress_UpdateSession(StringMap bundle, int addressId
     int client = GetClientOfUserId(clientId);
 
     if (client != INVALID_CLIENT) {
-        Session_SetPlayerAddressId(client, addressId);
+        Session_Get(client).SetValue(KEY_PLAYER_ADDRESS_ID, addressId);
     }
 }
