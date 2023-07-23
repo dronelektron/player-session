@@ -2,17 +2,17 @@ static const char g_createTable[] = ""
 ... "CREATE TABLE %s"
 ... "("
 ... "id INTEGER PRIMARY KEY, "
-... "host TEXT NOT NULL UNIQUE"
+... "ip TEXT NOT NULL UNIQUE"
 ... ");";
 
 static const char g_insertAddress[] = ""
-... "INSERT OR IGNORE INTO player_address (host) "
+... "INSERT OR IGNORE INTO player_address (ip) "
 ... "VALUES ('%s');";
 
 static const char g_getAddressId[] = ""
 ... "SELECT id "
 ... "FROM player_address "
-... "WHERE host = '%s';";
+... "WHERE ip = '%s';";
 
 void Database_PlayerAddress_Create() {
     char query[QUERY_SIZE];
