@@ -37,3 +37,17 @@ StringMap Bundle_PlayerAuth(int client) {
 
     return bundle;
 }
+
+StringMap Bundle_PlayerName(int client) {
+    char name[MAX_NAME_LENGTH];
+
+    GetClientName(client, name, sizeof(name));
+
+    StringMap bundle = new StringMap();
+    int clientId = GetClientUserId(client);
+
+    bundle.SetValue(KEY_CLIENT_ID, clientId);
+    bundle.SetString(KEY_PLAYER_NAME, name);
+
+    return bundle;
+}
