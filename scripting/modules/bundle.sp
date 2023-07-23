@@ -23,3 +23,17 @@ StringMap Bundle_PlayerAddress(int client) {
 
     return bundle;
 }
+
+StringMap Bundle_PlayerAuth(int client) {
+    char steam[MAX_AUTHID_LENGTH];
+
+    GetClientAuthId(client, AuthId_Steam3, steam, sizeof(steam));
+
+    StringMap bundle = new StringMap();
+    int clientId = GetClientUserId(client);
+
+    bundle.SetValue(KEY_CLIENT_ID, clientId);
+    bundle.SetString(KEY_PLAYER_STEAM, steam);
+
+    return bundle;
+}

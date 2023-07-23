@@ -13,3 +13,7 @@ void Session_Destroy(int client) {
 void Session_SetPlayerAddressId(int client, int addressId) {
     g_sessions[client].SetValue(KEY_PLAYER_ADDRESS_ID, addressId);
 }
+
+void Session_SetPlayerAuthId(int client, int authId) {
+    g_sessions[client].SetValue(KEY_PLAYER_AUTH_ID, authId);
+}

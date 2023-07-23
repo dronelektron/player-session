@@ -5,6 +5,7 @@
 
 #define KEY_CLIENT_ID "client_id"
 #define KEY_PLAYER_IP "player_ip"
+#define KEY_PLAYER_STEAM "player_steam"
 #define KEY_PLAYER_ADDRESS_ID "player_address_id"
 #define KEY_PLAYER_AUTH_ID "player_auth_id"
 #define KEY_PLAYER_NAME_ID "player_name_id"
