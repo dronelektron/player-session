@@ -1,11 +1,11 @@
 StringMap Bundle_Session() {
     StringMap bundle = new StringMap();
 
-    bundle.SetValue(KEY_PLAYER_ADDRESS_ID, ID_NOT_FOUND);
-    bundle.SetValue(KEY_PLAYER_AUTH_ID, ID_NOT_FOUND);
-    bundle.SetValue(KEY_PLAYER_NAME_ID, ID_NOT_FOUND);
-    bundle.SetValue(KEY_CONNECTED_ON, TIME_NOT_FOUND);
-    bundle.SetValue(KEY_DISCONNECTED_ON, TIME_NOT_FOUND);
+    bundle.SetValue(KEY_PLAYER_ADDRESS_ID, NO_ROW_ID);
+    bundle.SetValue(KEY_PLAYER_AUTH_ID, NO_ROW_ID);
+    bundle.SetValue(KEY_PLAYER_NAME_ID, NO_ROW_ID);
+    bundle.SetValue(KEY_CONNECTED_ON, TIME_NOT_SET);
+    bundle.SetValue(KEY_DISCONNECTED_ON, TIME_NOT_SET);
 
     return bundle;
 }

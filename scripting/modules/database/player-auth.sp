@@ -34,7 +34,7 @@ void Database_PlayerAuth_InsertOrGetId(StringMap bundle) {
 
     int authId = Cache_GetPlayerAuthId(steam);
 
-    if (authId != ID_NOT_FOUND) {
+    if (authId != NO_ROW_ID) {
         Database_PlayerAuth_UpdateSession(bundle, authId);
         CloseHandle(bundle);
 

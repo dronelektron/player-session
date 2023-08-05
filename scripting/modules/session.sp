@@ -22,9 +22,9 @@ void Session_Destroy(int client) {
 }
 
 static bool Session_IsCompleted(int client) {
-    int addressId = ID_NOT_FOUND;
-    int authId = ID_NOT_FOUND;
-    int nameId = ID_NOT_FOUND;
+    int addressId = NO_ROW_ID;
+    int authId = NO_ROW_ID;
+    int nameId = NO_ROW_ID;
     int connectedOn;
     int disconnectedOn;
 
@@ -36,11 +36,11 @@ static bool Session_IsCompleted(int client) {
 
     bool completed = true;
 
-    completed &= addressId != ID_NOT_FOUND;
-    completed &= authId != ID_NOT_FOUND;
-    completed &= nameId != ID_NOT_FOUND;
-    completed &= connectedOn != TIME_NOT_FOUND;
-    completed &= disconnectedOn != TIME_NOT_FOUND;
+    completed &= addressId != NO_ROW_ID;
+    completed &= authId != NO_ROW_ID;
+    completed &= nameId != NO_ROW_ID;
+    completed &= connectedOn != TIME_NOT_SET;
+    completed &= disconnectedOn != TIME_NOT_SET;
 
     return completed;
 }

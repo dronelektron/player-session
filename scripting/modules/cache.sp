@@ -9,7 +9,7 @@ void Cache_Create() {
 }
 
 int Cache_GetPlayerAddressId(const char[] ip) {
-    int addressId = ID_NOT_FOUND;
+    int addressId = NO_ROW_ID;
 
     g_playerAddressId.GetValue(ip, addressId);
 
@@ -21,7 +21,7 @@ void Cache_SetPlayerAddressId(const char[] ip, int addressId) {
 }
 
 int Cache_GetPlayerAuthId(const char[] steam) {
-    int authId = ID_NOT_FOUND;
+    int authId = NO_ROW_ID;
 
     g_playerAuthId.GetValue(steam, authId);
 
@@ -33,7 +33,7 @@ void Cache_SetPlayerAuthId(const char[] steam, int authId) {
 }
 
 int Cache_GetPlayerNameId(const char[] name) {
-    int nameId = ID_NOT_FOUND;
+    int nameId = NO_ROW_ID;
 
     g_playerNameId.GetValue(name, nameId);
 

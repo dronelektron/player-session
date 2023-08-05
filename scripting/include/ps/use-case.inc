@@ -5,5 +5,4 @@
 
 #define INVALID_CLIENT 0
 #define IP_SIZE 32
-#define ID_NOT_FOUND -1
-#define TIME_NOT_FOUND -1
+#define TIME_NOT_SET -1

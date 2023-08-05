@@ -34,7 +34,7 @@ void Database_PlayerAddress_InsertOrGetId(StringMap bundle) {
 
     int addressId = Cache_GetPlayerAddressId(ip);
 
-    if (addressId != ID_NOT_FOUND) {
+    if (addressId != NO_ROW_ID) {
         Database_PlayerAddress_UpdateSession(bundle, addressId);
         CloseHandle(bundle);
 

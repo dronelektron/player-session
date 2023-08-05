@@ -34,7 +34,7 @@ void Database_PlayerName_InsertOrGetId(StringMap bundle) {
 
     int nameId = Cache_GetPlayerNameId(name);
 
-    if (nameId != ID_NOT_FOUND) {
+    if (nameId != NO_ROW_ID) {
         Database_PlayerName_UpdateSession(bundle, nameId);
         CloseHandle(bundle);
 
