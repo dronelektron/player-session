@@ -34,9 +34,9 @@ void Database_PlayerAddress_InsertOrGetId(StringMap bundle) {
 
     int addressId = Cache_GetPlayerAddressId(ip);
 
-    if (addressId != ID_NOT_FOUND) {
+    if (addressId != NO_ROW_ID) {
         Database_PlayerAddress_UpdateSession(bundle, addressId);
-        CloseHandle(bundle);
+        Bundle_Destroy(bundle);
 
         return;
     }
@@ -65,12 +65,12 @@ public void Database_PlayerAddress_InsertOrGetIdSuccess(Database database, Strin
         Database_PlayerAddress_UpdateSession(bundle, addressId);
     }
 
-    CloseHandle(bundle);
+    Bundle_Destroy(bundle);
 }
 
 public void Database_PlayerAddress_InsertOrGetIdFailure(Database database, StringMap bundle, int numQueries, const char[] error, int failIndex, any[] queryData) {
     LogError("Transaction is failed: '%s'", error);
-    CloseHandle(bundle);
+    Bundle_Destroy(bundle);
 }
 
 static void Database_PlayerAddress_UpdateCache(StringMap bundle, int addressId) {
@@ -82,13 +82,10 @@ static void Database_PlayerAddress_UpdateCache(StringMap bundle, int addressId) 
 }
 
 static void Database_PlayerAddress_UpdateSession(StringMap bundle, int addressId) {
-    int clientId;
+    StringMap session;
 
-    bundle.GetValue(KEY_CLIENT_ID, clientId);
+    bundle.GetValue(KEY_SESSION, session);
+    session.SetValue(KEY_PLAYER_ADDRESS_ID, addressId);
 
-    int client = GetClientOfUserId(clientId);
-
-    if (client != INVALID_CLIENT) {
-        Session_Get(client).SetValue(KEY_PLAYER_ADDRESS_ID, addressId);
-    }
+    UseCase_SaveSession(session);
 }

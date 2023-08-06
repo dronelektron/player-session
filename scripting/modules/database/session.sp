@@ -26,7 +26,7 @@ public void Database_Session_OnCreate(Database database, DBResultSet results, co
     }
 }
 
-void Database_Session_Insert(StringMap bundle) {
+void Database_Session_Insert(StringMap session) {
     char query[QUERY_SIZE];
     int addressId;
     int authId;
@@ -34,16 +34,15 @@ void Database_Session_Insert(StringMap bundle) {
     int connectedOn;
     int disconnectedOn;
 
-    bundle.GetValue(KEY_PLAYER_ADDRESS_ID, addressId);
-    bundle.GetValue(KEY_PLAYER_AUTH_ID, authId);
-    bundle.GetValue(KEY_PLAYER_NAME_ID, nameId);
-    bundle.GetValue(KEY_CONNECTED_ON, connectedOn);
-    bundle.GetValue(KEY_DISCONNECTED_ON, disconnectedOn);
+    session.GetValue(KEY_PLAYER_ADDRESS_ID, addressId);
+    session.GetValue(KEY_PLAYER_AUTH_ID, authId);
+    session.GetValue(KEY_PLAYER_NAME_ID, nameId);
+    session.GetValue(KEY_CONNECTED_ON, connectedOn);
+    session.GetValue(KEY_DISCONNECTED_ON, disconnectedOn);
 
     Database_Get().Format(query, sizeof(query), g_insertSession, addressId, authId, nameId, connectedOn, disconnectedOn);
-    Database_Get().Query(Database_Session_OnInsert, query, bundle);
+    Database_Get().Query(Database_Session_OnInsert, query);
 }
 
-public void Database_Session_OnInsert(Database database, DBResultSet results, const char[] error, StringMap bundle) {
-    CloseHandle(bundle);
+public void Database_Session_OnInsert(Database database, DBResultSet results, const char[] error, any data) {
 }
