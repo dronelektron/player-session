@@ -3,7 +3,8 @@
 #endif
 #define _ps_bundle_included
 
-#define KEY_CLIENT_ID "client_id"
+#define KEY_COUNTER "counter"
+#define KEY_SESSION "session"
 #define KEY_PLAYER_IP "player_ip"
 #define KEY_PLAYER_STEAM "player_steam"
 #define KEY_PLAYER_NAME "player_name"

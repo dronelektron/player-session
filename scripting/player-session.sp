@@ -34,11 +34,11 @@ public void OnPluginStart() {
 }
 
 public void OnClientConnected(int client) {
-    Session_Create(client);
+    UseCase_StartSession(client);
 }
 
 public void OnClientDisconnect(int client) {
-    Session_Destroy(client);
+    UseCase_FinishSession(client);
 }
 
 public void OnClientPostAdminCheck(int client) {

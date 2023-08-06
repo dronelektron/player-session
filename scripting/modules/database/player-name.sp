@@ -36,7 +36,7 @@ void Database_PlayerName_InsertOrGetId(StringMap bundle) {
 
     if (nameId != NO_ROW_ID) {
         Database_PlayerName_UpdateSession(bundle, nameId);
-        CloseHandle(bundle);
+        Bundle_Destroy(bundle);
 
         return;
     }
@@ -65,12 +65,12 @@ public void Database_PlayerName_InsertOrGetIdSuccess(Database database, StringMa
         Database_PlayerName_UpdateSession(bundle, nameId);
     }
 
-    CloseHandle(bundle);
+    Bundle_Destroy(bundle);
 }
 
 public void Database_PlayerName_InsertOrGetIdFailure(Database database, StringMap bundle, int numQueries, const char[] error, int failIndex, any[] queryData) {
     LogError("Transaction is failed: '%s'", error);
-    CloseHandle(bundle);
+    Bundle_Destroy(bundle);
 }
 
 static void Database_PlayerName_UpdateCache(StringMap bundle, int nameId) {
@@ -82,13 +82,10 @@ static void Database_PlayerName_UpdateCache(StringMap bundle, int nameId) {
 }
 
 static void Database_PlayerName_UpdateSession(StringMap bundle, int nameId) {
-    int clientId;
+    StringMap session;
 
-    bundle.GetValue(KEY_CLIENT_ID, clientId);
+    bundle.GetValue(KEY_SESSION, session);
+    session.SetValue(KEY_PLAYER_NAME_ID, nameId);
 
-    int client = GetClientOfUserId(clientId);
-
-    if (client != INVALID_CLIENT) {
-        Session_Get(client).SetValue(KEY_PLAYER_NAME_ID, nameId);
-    }
+    UseCase_SaveSession(session);
 }

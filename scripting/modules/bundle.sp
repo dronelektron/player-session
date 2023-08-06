@@ -6,6 +6,7 @@ StringMap Bundle_Session() {
     bundle.SetValue(KEY_PLAYER_NAME_ID, NO_ROW_ID);
     bundle.SetValue(KEY_CONNECTED_ON, TIME_NOT_SET);
     bundle.SetValue(KEY_DISCONNECTED_ON, TIME_NOT_SET);
+    bundle.SetValue(KEY_COUNTER, 0);
 
     return bundle;
 }
@@ -16,9 +17,7 @@ StringMap Bundle_PlayerAddress(int client) {
     GetClientIP(client, ip, sizeof(ip));
 
     StringMap bundle = new StringMap();
-    int clientId = GetClientUserId(client);
 
-    bundle.SetValue(KEY_CLIENT_ID, clientId);
     bundle.SetString(KEY_PLAYER_IP, ip);
 
     return bundle;
@@ -30,9 +29,7 @@ StringMap Bundle_PlayerAuth(int client) {
     GetClientAuthId(client, AuthId_Steam3, steam, sizeof(steam));
 
     StringMap bundle = new StringMap();
-    int clientId = GetClientUserId(client);
 
-    bundle.SetValue(KEY_CLIENT_ID, clientId);
     bundle.SetString(KEY_PLAYER_STEAM, steam);
 
     return bundle;
@@ -44,10 +41,17 @@ StringMap Bundle_PlayerName(int client) {
     GetClientName(client, name, sizeof(name));
 
     StringMap bundle = new StringMap();
-    int clientId = GetClientUserId(client);
 
-    bundle.SetValue(KEY_CLIENT_ID, clientId);
     bundle.SetString(KEY_PLAYER_NAME, name);
 
     return bundle;
+}
+
+void Bundle_Destroy(StringMap bundle) {
+    StringMap session;
+
+    bundle.GetValue(KEY_SESSION, session);
+
+    UseCase_ReleaseSession(session);
+    CloseHandle(bundle);
 }
